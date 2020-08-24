@@ -1,11 +1,46 @@
 import { GraphQLServer } from "graphql-yoga";
 
+const users = [
+  {
+    id: "1",
+    name: "rabbi",
+    email: "rabbi@gmail.com",
+    age: 22,
+  },
+  {
+    id: "2",
+    name: "himel",
+    email: "himel@gmail.com",
+    age: 22,
+  },
+];
+
+const posts = [
+  {
+    id: "1",
+    title: "GraphQl 101",
+    body: "This iss GraphQl 101",
+    published: true,
+  },
+  {
+    id: "2",
+    title: "Prisma 101",
+    body: "Advance course",
+    published: true,
+  },
+  {
+    id: "3",
+    title: "Apollo 101",
+    body: "Learn Prisma",
+    published: true,
+  },
+];
+
 //type definitions (schema)
 const typeDefs = `
     type Query {
-      greeting(name: String!): String!
-      grades : [Int!]!
-      add(numbers : [Float!]!):Float!
+      users(query : String) :[User!]!
+      posts(query : String) : [Post!]!
       me : User!
       post :Post!
 
@@ -28,27 +63,6 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    greeting(parent, args, ctx, info) {
-      console.log(args);
-      if (args.name) {
-        return `Hello ${args.name}!`;
-      } else {
-        return `HeLLoOOo`;
-      }
-    },
-    add(parent, args, ctx, info) {
-      console.log(args);
-      if (args.numbers.length === 0) {
-        return 0;
-      } else {
-        return args.numbers.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue;
-        });
-      }
-    },
-    grades(parent, args, ctx, info) {
-      return [99, 100, 70];
-    },
     me() {
       return {
         id: "1213",
@@ -65,6 +79,27 @@ const resolvers = {
           "Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet voluptatem est dicta qui non quae saepe quisquam earum in velit?",
         published: false,
       };
+    },
+    users(parent, args, ctx, info) {
+      if (!args.query) {
+        return users;
+      } else {
+        return users.filter((user) => {
+          return user.name.toLowerCase().includes(args.query.toLowerCase());
+        });
+      }
+    },
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts;
+      } else {
+        return posts.filter((post) => {
+          return (
+            post.title.toLowerCase().includes(args.query.toLowerCase()) ||
+            post.body.toLowerCase().includes(args.query.toLowerCase())
+          );
+        });
+      }
     },
   },
 };
