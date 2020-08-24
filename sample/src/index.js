@@ -28,7 +28,7 @@ const resolvers = {
       return true;
     },
     gpa() {
-      return 4.83;
+      return 5;
     },
   },
 };
@@ -39,5 +39,5 @@ const server = new GraphQLServer({
 });
 
 server.start(() => {
-  console.log("The server is running !");
+  console.log("The server is running on http://localhost:4000");
 });
