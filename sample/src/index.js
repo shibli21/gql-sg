@@ -21,18 +21,21 @@ const posts = [
     title: "GraphQl 101",
     body: "This iss GraphQl 101",
     published: true,
+    author: "1",
   },
   {
     id: "2",
     title: "Prisma 101",
     body: "Advance course",
     published: true,
+    author: "1",
   },
   {
     id: "3",
     title: "Apollo 101",
     body: "Learn Prisma",
     published: true,
+    author: "2",
   },
 ];
 
@@ -56,6 +59,7 @@ const typeDefs = `
       title : String!
       body: String!
       published: Boolean!
+      author : User!
     }    
 `;
 
@@ -100,6 +104,13 @@ const resolvers = {
           );
         });
       }
+    },
+  },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author;
+      });
     },
   },
 };
