@@ -1,7 +1,7 @@
 import { GraphQLServer } from "graphql-yoga";
 import { v4 } from "uuid";
 
-const users = [
+let users = [
   {
     id: "1",
     name: "rabbi",
@@ -16,7 +16,7 @@ const users = [
   },
 ];
 
-const posts = [
+let posts = [
   {
     id: "1",
     title: "GraphQl 101",
@@ -40,7 +40,7 @@ const posts = [
   },
 ];
 
-const comments = [
+let comments = [
   {
     id: "101",
     text: "Good course",
@@ -81,6 +81,7 @@ const typeDefs = `
       createUser(data: CreateUserInput!) :  User!
       createPost(data:CreatePostInput! ) :Post!
       createComment(data:CreateCommentInput!):Comment!
+      deleteUser(id:ID!): User!
     }
 
     input CreateUserInput {
@@ -219,6 +220,28 @@ const resolvers = {
       comments.push(comment);
 
       return comment;
+    },
+    deleteUser(parent, args, ctx, info) {
+      const userIndex = users.findIndex((user) => {
+        return user.id === args.id;
+      });
+      if (userIndex === -1) {
+        throw new Error("user not found!");
+      }
+      const deletedUser = users.splice(userIndex, 1);
+      posts = posts.filter((post) => {
+        const match = post.author === args.id;
+
+        if (match) {
+          comments = comments.filter((comment) => comment.post !== post.id);
+        }
+
+        return !match;
+      });
+
+      comments = comments.filter((comment) => comment.author !== args.id);
+
+      return deletedUser[0];
     },
   },
   Post: {
